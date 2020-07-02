@@ -33,6 +33,8 @@ class SearchBooks extends Component {
   }
 
   render() {
+    const { onMoveShelf, noOrganizedListOfBooks } = this.props;
+
     return (
       <div className='search-books'>
         <div className='search-books-bar'>
@@ -53,14 +55,15 @@ class SearchBooks extends Component {
             {this.state.results.length > 0
               ? this.state.results.map((book) => {
                   if (book.authors !== undefined) {
-                    console.log(this.state.results);
-
                     return (
                       <Book
                         key={book.id}
+                        onMoveShelf={onMoveShelf}
+                        bookDetails={book}
                         bookTitle={book.title}
                         imageUrl={`url("${book.imageLinks.thumbnail}")`}
                         bookAuthor={book.authors[0]}
+                        noOrganizedListOfBooks={noOrganizedListOfBooks}
                       />
                     );
                   }
