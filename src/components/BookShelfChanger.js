@@ -1,24 +1,21 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class BookShelfChanger extends Component {
-  onSubmit = (e) => {
-    // this.setState({ value: e.target.value });
-    this.props.onSelectedShelf(e.target.value);
+const BookShelfChanger = ({ selectedShelf, onSelectedShelf }) => {
+  const onSubmit = (e) => {
+    onSelectedShelf(e.target.value);
   };
 
-  render() {
-    return (
-      <div className='book-shelf-changer'>
-        <select value={this.props.selectedShelf} onChange={this.onSubmit}>
-          <option value='move'>Move to...</option>
-          <option value='currentlyReading'>Currently Reading</option>
-          <option value='wantToRead'>Want to Read</option>
-          <option value='read'>Read</option>
-          <option value='none'>Delete</option>
-        </select>
-      </div>
-    );
-  }
-}
+  return (
+    <div className='book-shelf-changer'>
+      <select value={selectedShelf} onChange={onSubmit}>
+        <option value='move'>Move to...</option>
+        <option value='currentlyReading'>Currently Reading</option>
+        <option value='wantToRead'>Want to Read</option>
+        <option value='read'>Read</option>
+        <option value='none'>None</option>
+      </select>
+    </div>
+  );
+};
 
 export default BookShelfChanger;

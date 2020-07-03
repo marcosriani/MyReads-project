@@ -15,6 +15,24 @@ class Book extends Component {
     }));
   };
 
+  updateLibrary = () => {
+    const newLibrary = [...this.props.noOrganizedListOfBooks];
+    newLibrary.forEach((book) =>
+      book.id === this.props.bookDetails.id
+        ? (book.shelf = this.state.selectedShelf)
+        : null
+    );
+    const allBooks = {
+      currentlyReading: newLibrary.filter(
+        (book) => book.shelf === 'currentlyReading'
+      ),
+      wantToRead: newLibrary.filter((book) => book.shelf === 'wantToRead'),
+      read: newLibrary.filter((book) => book.shelf === 'read'),
+    };
+
+    this.props.onMoveShelf(allBooks);
+  };
+
   //   Posting books to the data base
   componentDidUpdate(prevProps, prevState) {
     if (prevState.selectedShelf !== this.state.selectedShelf) {
@@ -26,28 +44,33 @@ class Book extends Component {
           this.props.onSearch(this.state.selectedBook);
         }
 
-        //   Will update the backend server with our data
-        BooksAPI.update(this.state.selectedBook, this.state.selectedShelf).then(
-          () => {
-            const newLibrary = [...this.props.noOrganizedListOfBooks];
-            newLibrary.forEach((book) =>
-              book.id === this.props.bookDetails.id
-                ? (book.shelf = this.state.selectedShelf)
-                : null
-            );
-            const allBooks = {
-              currentlyReading: newLibrary.filter(
-                (book) => book.shelf === 'currentlyReading'
-              ),
-              wantToRead: newLibrary.filter(
-                (book) => book.shelf === 'wantToRead'
-              ),
-              read: newLibrary.filter((book) => book.shelf === 'read'),
-            };
+        // Change library state so that the books can change shelfs
+        this.updateLibrary();
 
-            this.props.onMoveShelf(allBooks);
-          }
-        );
+        //   Will update the backend server with our new data and update the state
+        BooksAPI.update(this.state.selectedBook, this.state.selectedShelf);
+      }
+    }
+
+    if (
+      prevProps.noOrganizedListOfBooks !== this.props.noOrganizedListOfBooks
+    ) {
+      // Making sure the new books are added to the right place
+      if (this.state.selectedShelf.length > 0) {
+        if (
+          !this.props.noOrganizedListOfBooks.includes(this.state.selectedBook)
+        ) {
+          this.props.onSearch(this.state.selectedBook);
+        }
+
+        if (
+          prevProps.noOrganizedListOfBooks.find(
+            (book) => book.id === this.state.selectedBook.id
+          ) === undefined
+        ) {
+          // Change library state so that the new book can be added to the new shelf
+          this.updateLibrary();
+        }
       }
     }
   }
@@ -58,7 +81,8 @@ class Book extends Component {
   };
 
   render() {
-    const { bookTitle, bookAuthor, imageUrl } = this.props;
+    const { bookTitle, bookAuthor, imageUrl, shelf } = this.props;
+
     return (
       <li onChange={this.onSelectedBook}>
         <div className='book'>
@@ -74,6 +98,7 @@ class Book extends Component {
             <BookSelfChanger
               selectedShelf={this.state.selectedShelf}
               onSelectedShelf={this.onSelectedShelf}
+              shelf={shelf}
             />
           </div>
           <div className='book-title'>{bookTitle}</div>
