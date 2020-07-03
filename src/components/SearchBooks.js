@@ -19,11 +19,24 @@ class SearchBooks extends Component {
     if (prevState.query !== this.state.query) {
       // Avoid error when searching for 0 query string length
       if (this.state.query.length > 0) {
-        BooksAPI.search(this.state.query).then((books) => {
-          this.setState(() => ({
-            results: books,
-          }));
-        });
+        BooksAPI.search(this.state.query)
+          .then((books) => {
+            this.setState(() => ({
+              results: books,
+            }));
+          })
+          .then(() => {
+            const copyResults = [...this.state.results];
+            copyResults.forEach((book) => {
+              this.props.noOrganizedListOfBooks.forEach((item) => {
+                if (item.id === book.id) {
+                  book.shelf = item.shelf;
+                }
+              });
+            });
+
+            this.setState({ results: copyResults });
+          });
 
         // this.props.onSearch(this.state.results);
       } else if (this.state.query.length === 0) {
@@ -36,6 +49,8 @@ class SearchBooks extends Component {
 
   render() {
     const { onMoveShelf, noOrganizedListOfBooks, onSearch } = this.props;
+
+    // console.log(copyResults);
 
     return (
       <div className='search-books'>
@@ -67,6 +82,7 @@ class SearchBooks extends Component {
                         bookAuthor={book.authors[0]}
                         noOrganizedListOfBooks={noOrganizedListOfBooks}
                         onSearch={onSearch}
+                        shelf={book.shelf}
                       />
                     );
                   }
