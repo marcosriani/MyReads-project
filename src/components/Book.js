@@ -19,16 +19,24 @@ class Book extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.selectedShelf !== this.state.selectedShelf) {
       if (this.state.selectedShelf.length > 0) {
+        //   Will update the backend server with our data
         BooksAPI.update(this.state.selectedBook, this.state.selectedShelf).then(
           () => {
-            const newLibrary = [...this.props.noOrganizedListOfBooks];
+            //   This if is used only when adding new books from the search component
+            if (
+              !this.props.noOrganizedListOfBooks.includes(
+                this.state.selectedBook
+              )
+            ) {
+              this.props.onSearch(this.state.selectedBook);
+            }
 
+            const newLibrary = [...this.props.noOrganizedListOfBooks];
             newLibrary.forEach((book) =>
               book.id === this.props.bookDetails.id
                 ? (book.shelf = this.state.selectedShelf)
                 : null
             );
-
             const allBooks = {
               currentlyReading: newLibrary.filter(
                 (book) => book.shelf === 'currentlyReading'

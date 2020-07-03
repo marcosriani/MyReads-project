@@ -35,7 +35,15 @@ class BooksApp extends React.Component {
     this.setState({ libraryBooks: allBooks });
   };
 
+  onSearch = (book) => {
+    this.setState((prevState) => ({
+      noOrganizedListOfBooks: prevState.noOrganizedListOfBooks.concat(book),
+    }));
+  };
+
   render() {
+    console.log(this.state.noOrganizedListOfBooks);
+
     return (
       <div className='app'>
         <Route
@@ -54,6 +62,7 @@ class BooksApp extends React.Component {
           render={() => (
             <SearchBooks
               onMoveShelf={this.onMoveShelf}
+              onSearch={this.onSearch}
               noOrganizedListOfBooks={this.state.noOrganizedListOfBooks}
             />
           )}

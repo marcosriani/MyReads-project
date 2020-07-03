@@ -20,12 +20,14 @@ class SearchBooks extends Component {
       // Avoid error when searching for 0 query string length
       if (this.state.query.length > 0) {
         BooksAPI.search(this.state.query).then((books) => {
-          this.setState((prevState) => ({
+          this.setState(() => ({
             results: books,
           }));
         });
+
+        // this.props.onSearch(this.state.results);
       } else if (this.state.query.length === 0) {
-        this.setState((prevState) => ({
+        this.setState(() => ({
           results: [],
         }));
       }
@@ -33,7 +35,7 @@ class SearchBooks extends Component {
   }
 
   render() {
-    const { onMoveShelf, noOrganizedListOfBooks } = this.props;
+    const { onMoveShelf, noOrganizedListOfBooks, onSearch } = this.props;
 
     return (
       <div className='search-books'>
@@ -64,6 +66,7 @@ class SearchBooks extends Component {
                         imageUrl={`url("${book.imageLinks.thumbnail}")`}
                         bookAuthor={book.authors[0]}
                         noOrganizedListOfBooks={noOrganizedListOfBooks}
+                        onSearch={onSearch}
                       />
                     );
                   }
