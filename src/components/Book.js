@@ -38,11 +38,25 @@ class Book extends Component {
     if (prevState.selectedShelf !== this.state.selectedShelf) {
       if (this.state.selectedShelf.length > 0) {
         //   This if is used only when adding new books from the search component
+
+        console.log(
+          this.props.noOrganizedListOfBooks.find((book) => {
+            return book.id === this.state.selectedBook.id;
+          }) === undefined
+        );
+
         if (
-          !this.props.noOrganizedListOfBooks.includes(this.state.selectedBook)
+          this.props.noOrganizedListOfBooks.find((book) => {
+            return book.id === this.state.selectedBook.id;
+          }) === undefined
         ) {
           this.props.onSearch(this.state.selectedBook);
         }
+        // else {
+        //   const updateSelectedBook = { ...this.state.selectedBook };
+        //   updateSelectedBook.shelf = this.state.selectedShelf;
+        //   this.props.onSearchMovingBook(updateSelectedBook);
+        // }
 
         // Change library state so that the books can change shelfs
         this.updateLibrary();
@@ -58,10 +72,17 @@ class Book extends Component {
       // Making sure the new books are added to the right place
       if (this.state.selectedShelf.length > 0) {
         if (
-          !this.props.noOrganizedListOfBooks.includes(this.state.selectedBook)
+          this.props.noOrganizedListOfBooks.find((book) => {
+            return book.id === this.state.selectedBook.id;
+          }) === undefined
         ) {
           this.props.onSearch(this.state.selectedBook);
         }
+        // else {
+        //   const updateSelectedBook = { ...this.state.selectedBook };
+        //   updateSelectedBook.shelf = this.state.selectedShelf;
+        //   this.props.onSearchMovingBook(updateSelectedBook);
+        // }
 
         if (
           prevProps.noOrganizedListOfBooks.find(

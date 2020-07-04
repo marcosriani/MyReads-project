@@ -41,6 +41,24 @@ class BooksApp extends React.Component {
     }));
   };
 
+  onSearchMovingBook = (book) => {
+    this.setState((prevState) => {
+      let noOrganizedListOfBooks = prevState.noOrganizedListOfBooks.map(
+        (item) => {
+          if (item.id === book.id) {
+            item.shelf = book.shelf;
+          }
+        }
+      );
+
+      return {
+        noOrganizedListOfBooks: noOrganizedListOfBooks,
+      };
+    });
+
+    console.log(book);
+  };
+
   render() {
     return (
       <div className='app'>
@@ -61,6 +79,7 @@ class BooksApp extends React.Component {
             <SearchBooks
               onMoveShelf={this.onMoveShelf}
               onSearch={this.onSearch}
+              onSearchMovingBook={this.onSearchMovingBook}
               noOrganizedListOfBooks={this.state.noOrganizedListOfBooks}
             />
           )}

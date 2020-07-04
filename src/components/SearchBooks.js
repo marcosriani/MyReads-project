@@ -6,7 +6,7 @@ import Book from './Book';
 class SearchBooks extends Component {
   state = {
     query: '',
-    results: [],
+    searchResults: [],
   };
 
   handleInputChange = (e) => {
@@ -19,36 +19,55 @@ class SearchBooks extends Component {
     if (prevState.query !== this.state.query) {
       // Avoid error when searching for 0 query string length
       if (this.state.query.length > 0) {
-        BooksAPI.search(this.state.query)
-          .then((books) => {
-            this.setState(() => ({
-              results: books,
-            }));
-          })
-          .then(() => {
-            const copyResults = [...this.state.results];
-            copyResults.forEach((book) => {
+        BooksAPI.search(this.state.query).then((allBooks) => {
+          if (!allBooks.error) {
+            allBooks.forEach((book) => {
+              book.shelf = 'none';
               this.props.noOrganizedListOfBooks.forEach((item) => {
                 if (item.id === book.id) {
                   book.shelf = item.shelf;
                 }
               });
             });
+            this.setState({ searchResults: allBooks });
+          }
 
-            this.setState({ results: copyResults });
-          });
+          this.setState(() => ({
+            searchResults: allBooks,
+          }));
+        });
 
         // this.props.onSearch(this.state.results);
       } else if (this.state.query.length === 0) {
         this.setState(() => ({
-          results: [],
+          searchResults: [],
         }));
       }
     }
   }
 
+  // changeShelf = () => {
+  //   const copySearchResults = [...this.state.searchResults];
+
+  //   if (!copySearchResults.error) {
+  //     copySearchResults.forEach((book) => {
+  //       this.props.noOrganizedListOfBooks.forEach((item) => {
+  //         if (item.id === book.id) {
+  //           console.log('true');
+  //           console.log(item.shelf);
+  //         }
+  //       });
+  //     });
+  //   }
+  // };
+
   render() {
-    const { onMoveShelf, noOrganizedListOfBooks, onSearch } = this.props;
+    const {
+      onMoveShelf,
+      noOrganizedListOfBooks,
+      onSearch,
+      onSearchMovingBook,
+    } = this.props;
 
     // console.log(copyResults);
 
@@ -69,8 +88,8 @@ class SearchBooks extends Component {
         </div>
         <div className='search-books-results'>
           <ol className='books-grid'>
-            {this.state.results.length > 0
-              ? this.state.results.map((book) => {
+            {this.state.searchResults.length > 0
+              ? this.state.searchResults.map((book) => {
                   if (book.authors !== undefined) {
                     return (
                       <Book
@@ -83,6 +102,7 @@ class SearchBooks extends Component {
                         noOrganizedListOfBooks={noOrganizedListOfBooks}
                         onSearch={onSearch}
                         shelf={book.shelf}
+                        onSearchMovingBook={onSearchMovingBook}
                       />
                     );
                   }

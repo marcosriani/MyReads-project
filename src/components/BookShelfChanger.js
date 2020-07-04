@@ -11,7 +11,9 @@ class BookShelfChanger extends Component {
     return (
       <div className='book-shelf-changer'>
         <select value={this.props.shelf} onChange={this.onSubmit}>
-          <option value='move'>Move to...</option>
+          <option disabled value='move'>
+            Move to...
+          </option>
           <option value='currentlyReading'>Currently Reading</option>
           <option value='wantToRead'>Want to Read</option>
           <option value='read'>Read</option>
