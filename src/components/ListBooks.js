@@ -2,7 +2,7 @@ import React from 'react';
 import BookShelfs from './BookShelfs';
 import { Link } from 'react-router-dom';
 
-const ListBooks = ({ libraryBooks, onMoveShelf, noOrganizedListOfBooks }) => {
+const ListBooks = ({ allBooks, onMoveShelf }) => {
   return (
     <div className='list-books'>
       <div className='list-books-title'>
@@ -11,22 +11,31 @@ const ListBooks = ({ libraryBooks, onMoveShelf, noOrganizedListOfBooks }) => {
       <div className='list-books-content'>
         <div>
           <BookShelfs
-            onMoveShelf={onMoveShelf}
             gridTitle='Currently Reading'
-            shelfsBooks={libraryBooks.currentlyReading}
-            noOrganizedListOfBooks={noOrganizedListOfBooks}
+            allBooks={() =>
+              allBooks.filter((book) => {
+                return book.shelf === 'currentlyReading';
+              })
+            }
+            onMoveShelf={onMoveShelf}
           />
           <BookShelfs
-            onMoveShelf={onMoveShelf}
             gridTitle='Want to Read'
-            shelfsBooks={libraryBooks.wantToRead}
-            noOrganizedListOfBooks={noOrganizedListOfBooks}
+            allBooks={() =>
+              allBooks.filter((book) => {
+                return book.shelf === 'wantToRead';
+              })
+            }
+            onMoveShelf={onMoveShelf}
           />
           <BookShelfs
-            onMoveShelf={onMoveShelf}
             gridTitle='Read'
-            shelfsBooks={libraryBooks.read}
-            noOrganizedListOfBooks={noOrganizedListOfBooks}
+            allBooks={() =>
+              allBooks.filter((book) => {
+                return book.shelf === 'read';
+              })
+            }
+            onMoveShelf={onMoveShelf}
           />
         </div>
       </div>

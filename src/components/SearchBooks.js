@@ -6,7 +6,7 @@ import Book from './Book';
 class SearchBooks extends Component {
   state = {
     query: '',
-    searchResults: [],
+    results: [],
   };
 
   handleInputChange = (e) => {
@@ -16,60 +16,43 @@ class SearchBooks extends Component {
   // Search
   componentDidUpdate(prevProps, prevState) {
     // Checking to make sure the componentDidUpdate don't get in a loop
-    if (prevState.query !== this.state.query) {
+    if (
+      prevState.query !== this.state.query ||
+      prevProps.clickedShelf !== this.props.clickedShelf
+    ) {
       // Avoid error when searching for 0 query string length
       if (this.state.query.length > 0) {
-        BooksAPI.search(this.state.query).then((allBooks) => {
-          if (!allBooks.error) {
-            allBooks.forEach((book) => {
-              book.shelf = 'none';
-              this.props.noOrganizedListOfBooks.forEach((item) => {
-                if (item.id === book.id) {
+        BooksAPI.search(this.state.query).then((books) => {
+          // Make sure no errors when a book dont exist on server
+          if (!books.error) {
+            const booksResult = [...books];
+            booksResult.forEach((book) => (book.shelf = 'none'));
+
+            for (let book of booksResult) {
+              for (let item of this.props.allBooks) {
+                if (book.id === item.id) {
                   book.shelf = item.shelf;
                 }
-              });
-            });
-            this.setState({ searchResults: allBooks });
-          }
+              }
+            }
 
-          this.setState(() => ({
-            searchResults: allBooks,
-          }));
+            this.setState(() => ({
+              results: booksResult,
+            }));
+          }
         });
 
         // this.props.onSearch(this.state.results);
       } else if (this.state.query.length === 0) {
         this.setState(() => ({
-          searchResults: [],
+          results: [],
         }));
       }
     }
   }
 
-  // changeShelf = () => {
-  //   const copySearchResults = [...this.state.searchResults];
-
-  //   if (!copySearchResults.error) {
-  //     copySearchResults.forEach((book) => {
-  //       this.props.noOrganizedListOfBooks.forEach((item) => {
-  //         if (item.id === book.id) {
-  //           console.log('true');
-  //           console.log(item.shelf);
-  //         }
-  //       });
-  //     });
-  //   }
-  // };
-
   render() {
-    const {
-      onMoveShelf,
-      noOrganizedListOfBooks,
-      onSearch,
-      onSearchMovingBook,
-    } = this.props;
-
-    // console.log(copyResults);
+    const { onMoveShelf } = this.props;
 
     return (
       <div className='search-books'>
@@ -88,21 +71,14 @@ class SearchBooks extends Component {
         </div>
         <div className='search-books-results'>
           <ol className='books-grid'>
-            {this.state.searchResults.length > 0
-              ? this.state.searchResults.map((book) => {
+            {this.state.results.length > 0
+              ? this.state.results.map((book) => {
                   if (book.authors !== undefined) {
                     return (
                       <Book
                         key={book.id}
+                        book={book}
                         onMoveShelf={onMoveShelf}
-                        bookDetails={book}
-                        bookTitle={book.title}
-                        imageUrl={`url("${book.imageLinks.thumbnail}")`}
-                        bookAuthor={book.authors[0]}
-                        noOrganizedListOfBooks={noOrganizedListOfBooks}
-                        onSearch={onSearch}
-                        shelf={book.shelf}
-                        onSearchMovingBook={onSearchMovingBook}
                       />
                     );
                   }

@@ -1,111 +1,11 @@
 import React, { Component } from 'react';
 import BookSelfChanger from './BookShelfChanger';
-import * as BooksAPI from '../BooksAPI';
 
 class Book extends Component {
-  state = {
-    selectedShelf: '',
-    selectedBook: [],
-  };
-
-  //   To select the book
-  onSelectedBook = () => {
-    this.setState(() => ({
-      selectedBook: this.props.bookDetails,
-    }));
-  };
-
-  updateLibrary = () => {
-    const newLibrary = [...this.props.noOrganizedListOfBooks];
-    newLibrary.forEach((book) =>
-      book.id === this.props.bookDetails.id
-        ? (book.shelf = this.state.selectedShelf)
-        : null
-    );
-    const allBooks = {
-      currentlyReading: newLibrary.filter(
-        (book) => book.shelf === 'currentlyReading'
-      ),
-      wantToRead: newLibrary.filter((book) => book.shelf === 'wantToRead'),
-      read: newLibrary.filter((book) => book.shelf === 'read'),
-    };
-
-    this.props.onMoveShelf(allBooks);
-  };
-
-  //   Posting books to the data base
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.selectedShelf !== this.state.selectedShelf) {
-      if (this.state.selectedShelf.length > 0) {
-        //   This if is used only when adding new books from the search component
-
-        console.log(
-          this.props.noOrganizedListOfBooks.find((book) => {
-            return book.id === this.state.selectedBook.id;
-          }) === undefined
-        );
-
-        if (
-          this.props.noOrganizedListOfBooks.find((book) => {
-            return book.id === this.state.selectedBook.id;
-          }) === undefined
-        ) {
-          this.props.onSearch(this.state.selectedBook);
-        }
-        // else {
-        //   const updateSelectedBook = { ...this.state.selectedBook };
-        //   updateSelectedBook.shelf = this.state.selectedShelf;
-        //   this.props.onSearchMovingBook(updateSelectedBook);
-        // }
-
-        // Change library state so that the books can change shelfs
-        this.updateLibrary();
-
-        //   Will update the backend server with our new data and update the state
-        BooksAPI.update(this.state.selectedBook, this.state.selectedShelf);
-      }
-    }
-
-    if (
-      prevProps.noOrganizedListOfBooks !== this.props.noOrganizedListOfBooks
-    ) {
-      // Making sure the new books are added to the right place
-      if (this.state.selectedShelf.length > 0) {
-        if (
-          this.props.noOrganizedListOfBooks.find((book) => {
-            return book.id === this.state.selectedBook.id;
-          }) === undefined
-        ) {
-          this.props.onSearch(this.state.selectedBook);
-        }
-        // else {
-        //   const updateSelectedBook = { ...this.state.selectedBook };
-        //   updateSelectedBook.shelf = this.state.selectedShelf;
-        //   this.props.onSearchMovingBook(updateSelectedBook);
-        // }
-
-        if (
-          prevProps.noOrganizedListOfBooks.find(
-            (book) => book.id === this.state.selectedBook.id
-          ) === undefined
-        ) {
-          // Change library state so that the new book can be added to the new shelf
-          this.updateLibrary();
-        }
-      }
-    }
-  }
-
-  //   To get the selected shelf option
-  onSelectedShelf = (selected) => {
-    this.setState({ selectedShelf: selected });
-  };
-
   render() {
-    const { bookTitle, bookAuthor, imageUrl, shelf } = this.props;
-
+    const { book } = this.props;
     return (
-      <li onChange={this.onSelectedBook}>
+      <li>
         <div className='book'>
           <div className='book-top'>
             <div
@@ -113,17 +13,13 @@ class Book extends Component {
               style={{
                 width: 128,
                 height: 193,
-                backgroundImage: imageUrl,
+                backgroundImage: `url("${book.imageLinks.thumbnail}")`,
               }}
             />
-            <BookSelfChanger
-              selectedShelf={this.state.selectedShelf}
-              onSelectedShelf={this.onSelectedShelf}
-              shelf={shelf}
-            />
+            <BookSelfChanger book={book} onMoveShelf={this.props.onMoveShelf} />
           </div>
-          <div className='book-title'>{bookTitle}</div>
-          <div className='book-authors'>{bookAuthor}</div>
+          <div className='book-title'>{book.title}</div>
+          <div className='book-authors'>{book.authors[0]}</div>
         </div>
       </li>
     );

@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 
 class BookShelfChanger extends Component {
-  onSubmit = (e) => {
-    this.props.onSelectedShelf(e.target.value);
+  onChangeShelf = (e) => {
+    this.props.onMoveShelf(this.props.book, e.target.value);
   };
 
   render() {
-    // console.log(this.props.shelf);
-
     return (
       <div className='book-shelf-changer'>
-        <select value={this.props.shelf} onChange={this.onSubmit}>
+        <select value={this.props.book.shelf} onChange={this.onChangeShelf}>
           <option disabled value='move'>
             Move to...
           </option>
