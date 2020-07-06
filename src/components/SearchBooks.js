@@ -73,16 +73,9 @@ class SearchBooks extends Component {
           <ol className='books-grid'>
             {this.state.results.length > 0
               ? this.state.results.map((book) => {
-                  if (book.authors !== undefined) {
-                    return (
-                      <Book
-                        key={book.id}
-                        book={book}
-                        onMoveShelf={onMoveShelf}
-                      />
-                    );
-                  }
-                  return null;
+                  return (
+                    <Book key={book.id} book={book} onMoveShelf={onMoveShelf} />
+                  );
                 })
               : null}
           </ol>
