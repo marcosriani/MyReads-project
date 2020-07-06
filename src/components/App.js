@@ -75,18 +75,6 @@ class BooksApp extends React.Component {
     }
   };
 
-  onAddBook = (book) => {
-    console.log(book);
-
-    // this.state.allBooks.forEach((book) => {
-    //   if (book.shelf === 'none') {
-    //     this.setState((prevState) => ({
-    //       allBooks: prevState.allBooks.filter((item) => item !== book),
-    //     }));
-    //   }
-    // });
-  };
-
   render() {
     console.log(this.state.allBooks);
 
@@ -108,7 +96,6 @@ class BooksApp extends React.Component {
             <SearchBooks
               allBooks={this.state.allBooks}
               onMoveShelf={this.onMoveShelf}
-              onAddBook={this.onAddBook}
               clickedBook={this.state.clickedBook}
               clickedShelf={this.state.clickedShelf}
             />
